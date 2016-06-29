@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+    <div class="col-md-6">
+        <h2>v2Ex 最新热帖</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>文章</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in v2ex %}
+                <tr>
+                    <td> #</td>
+                    <td>
+                        <a href={{ i['url'] }}>{{ i['title'] }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>cnBeta 最新热帖</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>文章</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in cnbeta %}
+                <tr>
+                    <td> #</td>
+                    <td>
+                        <a href={{ i['url'] }}>{{ i['title'] }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
