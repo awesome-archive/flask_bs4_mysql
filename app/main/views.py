@@ -1,12 +1,14 @@
 from . import main
-from flask import render_template
+from flask import render_template, redirect, url_for, flash
 from bs4 import BeautifulSoup
 import MySQLdb
 import MySQLdb.cursors
 import requests
+import datetime
 
 
 class Mysql_db(object):
+
     def __init__(self):
         self.conn = MySQLdb.connect('localhost', 'web', 'webpass', 'hotweb', use_unicode=True, charset="utf8",
                                     cursorclass=MySQLdb.cursors.DictCursor)
@@ -15,6 +17,15 @@ class Mysql_db(object):
     def close_db(self):
         self.cursor.close()
         self.conn.close()
+
+
+def sqlCnbeta(db):
+    db.cursor.execute("truncate table hot_cnbeta")
+    db.conn.commit()
+    db.cursor.execute("insert into hot_site(web,refresh_time) values(%s,%s)", ("cnbeta", str(datetime.datetime.now())))
+    for i in soup.find_all('div', class_='title'):
+        db.cursor.execute("insert into hot_cnbeta(title,url) values(%s,%s)", (i.a.string.lstrip('[]图图表热图视频'), 'http://www.cnbeta.com' + i.a['href']))
+    db.conn.commit()
 
 
 @main.route('/')
@@ -50,12 +61,25 @@ def getCnbeta():
     html.encoding = 'utf-8'
     soup = BeautifulSoup(html.text, 'lxml')
     db = Mysql_db()
+    db.cursor.execute(
+        "select * from hot_site where web = 'cnbeta' order by refresh_time desc limit 1")
+    data = db.cursor.fetchone()
     try:
-        for i in soup.find_all('div', class_='title'):
-            db.cursor.execute("insert into hot_cnbeta(title,url) values(%s,%s)",
-                              (i.a.string.lstrip('[图][视频][动图]'), 'http://www.cnbeta.com' + i.a['href']))
-        db.conn.commit()
-    except:
-        db.conn.rollback()
+        if data is not None:
+            overtime = (datetime.datetime.now() - data['refresh_time'])
+            if overtime.seconds > 7200:
+                sqlCnbeta(db)
+                flash('刷新列表成功')
+                return redirect(url_for('main.index'))
+            else:
+                flash('还未达到重置时间')
+                return redirect(url_for('main.index'))
+        else:
+            sqlCnbeta(db)
+            flash('初始化成功')
+            return redirect(url_for('main.index'))
+    except BaseException as e:
+        return '错误'
+    finally:
         db.close_db()
-    return render_template('index.html')
+
