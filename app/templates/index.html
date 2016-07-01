@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-<div class="col-md-12">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{ message  }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="col-md-12">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
-    <div class="col-md-6">
-        <h2>v2Ex 最新热帖</h2>
+    <div class="col-md-6" id="cnbeta_list">
+        <h2>v2Ex </h2> <a href="javascript:void(0);" onclick="getv2ex()" class="glyphicon glyphicon-repeat"
+                          aria-hidden="true"></a>
         <table class="table">
             <thead>
             <tr>
@@ -36,7 +37,8 @@
     </div>
     <div class="col-md-6">
         <div>
-            <h2>cnBeta</h2>
+            <h2>cnBeta</h2> <a href="javascript:void(0);" onclick="getcnbeta()" class="glyphicon glyphicon-repeat"
+                               aria-hidden="true"></a>
         </div>
         <table class="table">
             <thead>
@@ -57,4 +59,10 @@
             </tbody>
         </table>
     </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename = 'js/layer.js', _external=True) }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename = 'js/refreshData.js', _external=True) }}"></script>
 {% endblock %}
